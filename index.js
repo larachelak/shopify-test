@@ -24,9 +24,15 @@ const init = async () => {
         method: 'GET',
         path: '/',
         handler: async (request, h) => {
-            const product = require('./product.json');
-            const result = await engine.renderFile('product', { product });
-            return result;
+            try {
+                const product = require('./product.json');
+                const result = await engine.renderFile('product', { product });
+                return result;
+            } catch (e) {
+                console.log(e);
+                return e;
+            }
+            
         }
     });
 
