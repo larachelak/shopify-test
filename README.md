@@ -41,6 +41,12 @@ So here is what we are looking for.
 
 And *Voila!* You are almost done!
 
+## Troubleshooting tips
+
+Since this is not _actually_ a shopify site, we can't expect it to behave exactly like a shopify site in terms of error handling. If an error occurs (as in a mis-typed variable, or bad liquid syntax) the page will return a 500 error. All errors are logged in the console so look out there for what might be going wrong. 
+
+To stop the development server, simlpy do a `ctrl` + `c` and the node process will stop.
+
 # LASTLY: THE MOST IMPORTANT PART
 
 When you are done - remove _ALL_ of the text from this README, and replace it with a description of what you did. Tell us why you made the choices you did, what you would have liked to do better, what was your favorite part, and most importantly, what would you change if this we're _ACTUALLY_ a shopify theme.
