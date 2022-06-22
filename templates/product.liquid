@@ -1,5 +1,251 @@
 {% layout "template.liquid" %}
 
 {% block content %}
-    <h1>{{ product.title | capitalize }}</h1>
+
+<!-- templates/product.liquid -->
+
+<style>
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 18px;
+  }
+
+  .sr-only {
+    clip: rect(0 0 0 0);
+    clip-path: inset(100%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  fieldset {
+    border: none;
+    padding: 0;
+  }
+
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 1em;
+    height: 1em;
+  }
+
+  input[type="radio"] + label {
+    padding: 10px 0;
+    text-align: center;
+    width: 45px;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    background: rgb(232, 232, 232);
+    border: 1px solid rgb(232, 232, 232);
+    cursor: pointer;
+  }
+
+  input[type="radio"].active + label {
+    border: 1px solid black;
+  }
+
+  .swiper {
+    width: 100%;
+  }
+
+  .swiper img {
+    width: 100%;
+  }
+
+  .swiper-wrapper {
+    height: auto;
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: black;
+  }
+
+  .product {
+    padding-top: 20px;
+    padding-bottom: 60px;
+  }
+
+  .product-form__field-set {
+    margin-bottom: 20px;
+  }
+
+  .product__stock {
+    font-weight: 700;
+    color: rgb(107, 107, 107);
+  }
+
+  .product__price {
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 18px;
+  }
+
+  .product__purchase {
+    display: block;
+    margin-top: 20px;
+    max-width: 100%;
+    background: black;
+    color: white;
+    border: none;
+    padding: 15px 70px;
+    font-weight: 700;
+    font-size: 20px;
+  }
+
+</style>
+
+<div class="product">
+
+  <div class="container">
+    <h1 class="product__title">{{ product.title }}</h1>
+  </div>
+
+  <div class="swiper">
+    <div class="swiper-wrapper">
+        {% for media in product.media %}
+            <div class="swiper-slide"><img src="{{ media.src }}" alt="{{ media.alt }}"></div>
+        {% endfor %}
+    </div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-scrollbar"></div>
+  </div>
+
+  <div class="container">
+
+    <div class="product__desc">
+      {{ product.description }}
+    </div>
+
+    <div class="product__price {%- if product.compare_at_price > product.price %} price--on-sale {% endif -%}">
+      Price: 
+      {% if product.compare_at_price > product.price %}
+        <del>${{ product.price | money }}</del> On Sale! ${{ product.compare_at_price | money }}
+      {% else %}
+        ${{ product.price }}
+      {% endif %}
+    </div>
+
+    <!--
+    <div class="product__tags">
+      {% for tag in product.tags %}
+        <span class="tag">{{ tag }}</span>
+      {% endfor %}
+    </div> -->
+
+    <div class="product__stock">
+    {% if product.available %}
+      <span>In Stock</span>
+      {% else %}
+      <span>Out of Stock</span>
+    {% endif %}
+    </div>
+
+    <form action="/cart/add" method="post" class="product-form" id="add-to-cart">
+
+      {%- for option in product.options -%}
+        <fieldset class="product-form__field-set">
+        <h2>{{ option.name }}</h2>
+          {%- for value in option.values -%}
+            <input type="radio" id="shoe-{{ option.position }}-{{ forloop.index0 }}"
+              name="{{ option.name }}"
+              value="{{ value | escape }}"
+              form="add-to-cart"
+              {% if forloop.index0 == 0 %}class="active"{% endif %}
+              {% if forloop.index0 == 0 %}checked{% endif %}
+              {% if option.selected_value == value %}checked{% endif %}
+            >
+            <label class="form__variant-label" for="shoe-{{ option.position }}-{{ forloop.index0 }}">
+              {{ value }}
+            </label>
+          {%- endfor -%}
+        </fieldset>
+      {%- endfor -%}
+
+      <label class="form__option-" for="Quantity-{{ section.id }}">
+        Quantity
+      </label>
+
+      <quantity-input class="quantity">
+        <input class="quantity__input"
+            type="number"
+            name="quantity"
+            id="Quantity"
+            min="1"
+            value="1"
+            form="add-to-cart"
+          >
+      </quantity-input>
+
+      <input type="submit" name="add" value="Buy Now" class="btn product__purchase" onclick="addItem('add-to-cart'); return false; ">
+
+      <div class="confirm-message"></div>
+
+    </form>
+
+  </div>
+
+  <script>
+
+    function addItem(form_id) {
+      $.ajax({
+          type: 'POST',
+          url: '/cart/add.js',
+          dataType: 'json',
+          data: $('#'+form_id).serialize(),
+          success: addToCartOk,
+          error: addToCartFail
+        });
+    }
+
+    function addToCartOk(product) {
+      $('.confirm-message').html('Product was added to the cart!');
+    }
+
+    function addToCartFail(obj, status) {
+      $('.confirm-message').html('The product you are trying to add is out of stock.');
+    }
+
+    $("input[type='radio'").click(function () {
+      $("input[type='radio'").each(function() {
+        $(this).removeClass("active");
+      });
+      $(this).addClass("active");
+    });
+
+  </script>
+
+
+  <script>
+    const swiper = new Swiper('.swiper', {
+        // Optional parameters
+        loop: true,
+
+        // Navigation arrows
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+
+        // And if we need scrollbar
+        scrollbar: {
+            el: '.swiper-scrollbar',
+        },
+    });
+  </script>
+
+</div>
+
 {% endblock %}
