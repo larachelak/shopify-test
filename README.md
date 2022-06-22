@@ -2,7 +2,7 @@
 # What I did
 I this test build I decided to implement a very basic PDP with a slider. I chose Swiper as it's a performant option that doesn't cause as many layout shift issues as other libraries.
 
-I decided to include only some of the product data, to keep the UX light and clear. There is minimal styling involved but I chose to use BEM style CSS to keep everything organized nonetheless. I added a few quick utility classes as well, even though they're only implemented once in this case (force of habit!). Also, this project was obviously a little harder to debug, due to it not being a standard Shopify build.
+I decided to include only some of the product data, to keep the UX light and clear. There is minimal styling involved but I chose to use BEM style CSS to keep everything organized nonetheless. I added a few quick utility classes as well, even though they're only implemented once in this case (force of habit!). Also, this project was obviously a little harder to debug, due to it not being a standard Shopify build. I had some issues with getting the `| money` filter to work.
 
 My favorite part was actually seeing all of the data in an easily referenced .json file!
 
